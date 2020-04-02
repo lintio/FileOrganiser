@@ -1,4 +1,5 @@
 .vscode
 venv
-testFolders
-tosort
+watchFolder
+OrganisedFolder
+build.py

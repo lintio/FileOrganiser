@@ -1,4 +1,3 @@
-This needs a folder called 'testFolders'
-inside that folder create a folder called 'watchFolder'
+Created folders on first run
 
-then put some images in the watch folder and wait for errors to happen as they will its still very much in progress :P
+then put some images in the watchFolder and wait for errors to happen as they will its still very much in progress :P
