@@ -146,12 +146,11 @@ if init_folders() == False:
     print('The folders are now setup please add images to the watchFolder and run the program again')
 else:
     print('Inital Folders are setup correctly')
+    #dateOfBirth = input('enter date of birth using folowing format yyyy:mm:dd ->') #wanted to make it plainer to understand
+    yearOfBirth = input('enter Year of birth using folowing format yyyy (eg 2020) ->')
+    monthOfBirth = input('enter Month of birth using folowing format mm (eg 03) ->')
+    dayOfBirth = input('enter day of birth using folowing format dd (eg 01) ->')
+    dateOfBirth = yearOfBirth + ':' + monthOfBirth + ':' + dayOfBirth
+    #print(dateOfBirth)
     get_pictures(source)
     print('Done! Please check the OrganisedFolder to see your organised pictures')
-
-
-#dateOfBirth = input('enter date of birth using folowing format yyyy:mm:dd ->')
-#folderName = age_calc(dateOfBirth, testDate)
-#filename = 'test.txt'
-
-#check_for_dir(folderName, filename)
