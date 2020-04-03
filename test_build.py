@@ -1,3 +1,13 @@
+"""
+    Adding image class and running the functions from within them might be a way to keep things tidy
+    as date formats may be able to be built in to the class therefore there should be no issue as to 
+    how dates are added to the class as long as they are added as a datetime object the format can be
+    adjusted within the class once all classes are created the prosess of moving the images would be 
+    simply loop through the classes and extract the info needed from the class to such as 
+    (file name, new folder name, target and source)
+"""
+
+
 import os.path, shutil, time, datetime
 from os import path
 from PIL import Image, ExifTags
@@ -8,6 +18,8 @@ source = cwd + '\\watchFolder\\'
 print('SRC = ' + source)
 target = cwd + '\\OrganisedFolder\\'
 print('TD  = ' + target)
+
+class picture
 
 #temp dates later dates will be created from input and file info
 #date layout yyyy:mm:dd
