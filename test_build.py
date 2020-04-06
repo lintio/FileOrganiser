@@ -1,99 +1,87 @@
-"""
-    Adding image class and running the functions from within them might be a way to keep things tidy
-    as date formats may be able to be built in to the class therefore there should be no issue as to 
-    how dates are added to the class as long as they are added as a datetime object the format can be
-    adjusted within the class once all classes are created the prosess of moving the images would be 
-    simply loop through the classes and extract the info needed from the class to such as 
-    (file name, new folder name, target and source)
-"""
-
-
 import os.path, shutil, time, datetime
 from os import path
 from PIL import Image, ExifTags
+from datetime import datetime
+
+class Picture:
+    def __init__(self, picName, picDate, birthDate, dateFrom, yearSelect):
+        self.picName = picName
+        self.picDate = picDate
+        self.birthDate = birthDate
+        self.dateFrom = dateFrom
+        if picDate.day < birthDate.day:
+            dateDiff = (picDate.year - birthDate.year) * 12 + (picDate.month - birthDate.month) - 1
+            if dateDiff >= yearSelect:
+                if picDate.month - birthDate.month < 0:
+                    self.folderName = str((picDate.year - birthDate.year) - 1) + ' years ' + str(12 - abs(picDate.month - birthDate.month)) + ' Months'
+                else:
+                    self.folderName = str(picDate.year - birthDate.year) + ' years ' + str((picDate.month - birthDate.month) - 1) + ' Months'
+            else:
+                self.folderName = str((picDate.year - birthDate.year) * 12 + (picDate.month - birthDate.month) - 1) + ' Months'
+        elif (picDate.year - birthDate.year) * 12 + (picDate.month - birthDate.month) == 0:
+            self.folderName = '0 Months'
+        else:
+            dateDiff = (picDate.year - birthDate.year) * 12 + (picDate.month - birthDate.month)
+            if dateDiff >= yearSelect:
+                if picDate.month - birthDate.month < 0:
+                    self.folderName = str((picDate.year - birthDate.year) - 1) + ' years ' + str(12 - abs(picDate.month - birthDate.month)) + ' Months'
+                else:
+                    self.folderName = str((picDate.year - birthDate.year)) + ' years ' + str(picDate.month - birthDate.month) + ' Months'
+            else:
+                self.folderName = str((picDate.year - birthDate.year) * 12 + (picDate.month - birthDate.month)) + ' Months'
+
 
 cwd = os.getcwd()
 print('CWD = ' + cwd)
-source = cwd + '\\watchFolder\\'
+source = cwd + '\\Pics_ToSort\\'
 print('SRC = ' + source)
-target = cwd + '\\OrganisedFolder\\'
+target = cwd + '\\Pics_Sorted\\'
 print('TD  = ' + target)
 
-class picture
-
-#temp dates later dates will be created from input and file info
-#date layout yyyy:mm:dd
-dateOfBirth = '2017:08:10'
-
-"""
-    Calculate Age from the date given and the DoB that user enters
-"""
-def age_calc(dateA, dateB, filename):
-    dateOfBirth = dateA.split(':')
-    picDate = dateB.split(':')
-
-    year = int(picDate[0]) - int(dateOfBirth[0])
-    month = int(picDate[1]) - int(dateOfBirth[1])
-    day = int(picDate[2]) - int(dateOfBirth[2])
-
-    if day < 0:
-        month -= 1
-    if month < 0:
-        month = 12 - abs(month)
-        year -= 1
-    if year == 0:
-        age = str(month) + ' months'
-    else:
-        age = str(year) + ' Year ' + str(month) + ' Months'
-
-    success = check_for_dir(age, filename)
-    return(success)
-
-"""
-Check to see if Dir exists if not create it and move picture in
-"""
-def check_for_dir(folderName, filename):
-    #convert age to dir name then check for dir
-    path = target + folderName + '\\'
-    #print(path)
-    if os.path.exists(path) == False:
-        print('Creating folder', folderName)
+def init_folders(): # Done and working
+    #create testFolders
+    Pics_ToSort = cwd + '\\Pics_ToSort'
+    Pics_Sorted = cwd + '\\Pics_Sorted'
+    #source folder
+    if os.path.exists(Pics_ToSort) == False:
+        Pics_ToSortReady = False
+        print('Creating Pics_ToSort')
         #create a folder
         try:
-            os.mkdir(path)
+            os.mkdir(Pics_ToSort)
         except OSError:
-            print ("Creation of the directory %s failed" % path)
-        else:
-            #move file to dir
-            shutil.copy(source + filename, path + filename)
-            success = True
+            print ("Creation of the directory %s failed" % Pics_ToSort)
     else:
-        if os.path.isdir(path):
-            #move file to dir
-            shutil.copy(source + filename, path + filename)
-            success = True
-        else:
-            print('file with same name found')
-            # Add comparison if duplicate rename file then copy to duplicates folder in dated folder
-            #if compair == 'match':
-
-            # else rename file and copy file
-            success = False
-    return(success)
-
-"""
-Get Pictures and dates
-"""
-def get_pictures(source):
+        #print('The Pics_ToSort is folder Ready')
+        Pics_ToSortReady = True
+    #target folder
+    if os.path.exists(Pics_Sorted) == False:
+        Pics_SortedReady = False
+        print('Creating Pics_Sorted')
+        #create a folder
+        try:
+            os.mkdir(Pics_Sorted)
+        except OSError:
+            print ("Creation of the directory %s failed" % Pics_Sorted)
+    else:
+        #print('The Pics_Sorted is folder Ready')
+        Pics_SortedReady = True
+    if Pics_ToSortReady == True and Pics_SortedReady == True:
+        return(True)
+    else:
+        return(False)
+def get_pictures(source, birthDateInput, yearSelect):
+    birthDate = datetime.strptime(birthDateInput, '%d/%m/%Y').date()
+    count = 0
     files = os.listdir(source)
     for file in files:
+        count += 1
         path = source + '\\' + file
         with Image.open(path) as img:
             try:
                 exif = { ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS }
                 dateCreated = exif.get('DateTime', None)
                 if dateCreated == None:
-                    #print(file)
                     #if date in filename make extract and add : between year:month:day
                     splitname = file.split('_')
                     for x, part in enumerate(splitname):
@@ -102,68 +90,33 @@ def get_pictures(source):
                                 part = part[:4] + ':' + part[4:]
                                 part = part[:7] + ':' + part[7:]
                                 dateCreated = ''.join(part)
-                                #print(file, dateCreated, 'No Date In Tag')
+                    dateSource = 'Name'
+                    dateCreated = datetime.strptime(dateCreated, '%Y:%m:%d').date()
                 else:
-                    #print(file)
                     dateCreated = dateCreated.split(' ')
                     dateCreated = ''.join(dateCreated[0])
+                    dateCreated = datetime.strptime(dateCreated, '%Y:%m:%d').date()
+                    dateSource = 'MetaDate'
             except:
-                dateCreated = datetime.datetime.strptime(time.ctime(os.path.getmtime(path)), "%a %b %d %H:%M:%S %Y")
+                dateCreated = datetime.strptime(time.ctime(os.path.getmtime(path)), "%a %b %d %H:%M:%S %Y")
                 dateCreated = str(dateCreated)
                 dateCreated = dateCreated.split(' ')
                 dateCreated = ''.join(dateCreated[0])
                 dateCreated = dateCreated.replace('-', ':')
-                #print(dateCreated)
-                #print('AttError', file, e)
-        success = age_calc(dateOfBirth, dateCreated, file)
-        if success == True:
-            continue
-
-def init_folders():
-    #create testFolders
-    watchFolder = cwd + '\\watchFolder'
-    OrganisedFolder = cwd + '\\OrganisedFolder'
-    #source folder
-    if os.path.exists(watchFolder) == False:
-        watchFolderReady = False
-        print('Creating watchFolder')
-        #create a folder
-        try:
-            os.mkdir(watchFolder)
-        except OSError:
-            print ("Creation of the directory %s failed" % watchFolder)
-    else:
-        #print('The watchFolder is folder Ready')
-        watchFolderReady = True
-    #target folder
-    if os.path.exists(OrganisedFolder) == False:
-        OrganisedFolderReady = False
-        print('Creating OrganisedFolder')
-        #create a folder
-        try:
-            os.mkdir(OrganisedFolder)
-        except OSError:
-            print ("Creation of the directory %s failed" % OrganisedFolder)
-    else:
-        #print('The OrganisedFolder is folder Ready')
-        OrganisedFolderReady = True
-    if watchFolderReady == True and OrganisedFolderReady == True:
-        return(True)
-    else:
-        return(False)
+                dateCreated = datetime.strptime(dateCreated, '%Y:%m:%d').date()
+                dateSource = 'Modified:'
+        #print(count, dateFrom, dateCreated, type(dateCreated), file)
+        photo = Picture(file, dateCreated, birthDate, dateSource, yearSelect)
+        print(photo.picName, photo.dateFrom, photo.folderName, photo.picDate)
 
 
 os.system('cls' if os.name == 'nt' else 'clear')
 if init_folders() == False:
-    print('The folders are now setup please add images to the watchFolder and run the program again')
+    print('The folders are now setup please add images to the Pics_ToSort folder and run the program again')
 else:
     print('Inital Folders are setup correctly')
-    get_pictures(source)
-    print('Done! Please check the OrganisedFolder to see your organised pictures')
-
-
-#dateOfBirth = input('enter date of birth using folowing format yyyy:mm:dd ->')
-#folderName = age_calc(dateOfBirth, testDate)
-#filename = 'test.txt'
-
-#check_for_dir(folderName, filename)
+    birthDateInput = input('Date of Birth (dd/mm/yyyy): ')
+    yearSelect = int(input('For the how meny months do you want to switch to years? (e.g. 18 would become 1 years 6 months):'))
+    print('The output will show the following: \n [File name, Where the files date has come from, The folder name, The file date]')
+    get_pictures(source, birthDateInput, yearSelect)
+    print('Done! Please check the Pics_Sorted folder to see your organised pictures')

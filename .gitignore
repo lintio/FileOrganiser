@@ -1,5 +1,5 @@
 .vscode
 venv
-watchFolder
-OrganisedFolder
+Pics_ToSort
+Pics_Sorted
 build.py
