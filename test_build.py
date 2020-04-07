@@ -95,8 +95,15 @@ def get_pictures(source, birthDateInput, yearSelect):
             photos.append(photo)
             #print(photo.picName, photo.dateFrom, photo.folderName, photo.picDate)
         except:
-            count -= 1
-            continue
+            dateCreated = datetime.strptime(time.ctime(os.path.getmtime(path)), "%a %b %d %H:%M:%S %Y")
+            dateCreated = str(dateCreated)
+            dateCreated = dateCreated.split(' ')
+            dateCreated = ''.join(dateCreated[0])
+            dateCreated = dateCreated.replace('-', ':')
+            dateCreated = datetime.strptime(dateCreated, '%Y:%m:%d').date()
+            dateSource = 'Modified:'
+            photo = Picture(file, dateCreated, birthDate, dateSource, yearSelect)
+            photos.append(photo)
     return(count)
 
 def calc_age():

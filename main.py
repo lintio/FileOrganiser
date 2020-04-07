@@ -95,8 +95,15 @@ def get_pictures(source, birthDateInput, yearSelect):
             photos.append(photo)
             #print(photo.picName, photo.dateFrom, photo.folderName, photo.picDate)
         except:
-            count -= 1
-            continue
+            dateCreated = datetime.strptime(time.ctime(os.path.getmtime(path)), "%a %b %d %H:%M:%S %Y")
+            dateCreated = str(dateCreated)
+            dateCreated = dateCreated.split(' ')
+            dateCreated = ''.join(dateCreated[0])
+            dateCreated = dateCreated.replace('-', ':')
+            dateCreated = datetime.strptime(dateCreated, '%Y:%m:%d').date()
+            dateSource = 'Modified:'
+            photo = Picture(file, dateCreated, birthDate, dateSource, yearSelect)
+            photos.append(photo)
     return(count)
 
 def calc_age():
@@ -171,8 +178,7 @@ else:
     yearSelect = int(input('For the how meny months do you want to switch to years? (e.g. 18 would become 1 years 6 months) -> '))
     count = get_pictures(source, birthDateInput, yearSelect)
     calc_age()
-    copy = input(str(count) + ' Photos found would you like to start (Y/N) -> ').upper()
+    copy = input(str(count) + ' Files found would you like to start (Y/N) -> ').upper()
     if copy == 'Y' or 'YES':
         check_for_dir()
-    print('Done! Please check the Pics_Sorted folder to see your organised pictures')
-    print('Files that are not pictures have been left in your Pics_ToSort folder')
+    print('Done! Please check the Pics_Sorted folder to see your organised files')
