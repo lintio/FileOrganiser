@@ -175,3 +175,4 @@ else:
     if copy == 'Y' or 'YES':
         check_for_dir()
     print('Done! Please check the Pics_Sorted folder to see your organised pictures')
+    print('Files that are not pictures have been left in your Pics_ToSort folder')
